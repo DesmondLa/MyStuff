@@ -1,34 +1,164 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <title>Show Text on Button Click</title>
-  <style>
-    /* Hide the content initially */
-    #hidden-text {
-      display: none;
-    }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Drag and Drop Cards</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+        }
+        .container {
+            display: flex;
+            justify-content: space-between;
+        }
+        .column {
+            flex: 1;
+            margin: 20px;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            background-color: #f9f9f9;
+            position: relative;
+        }
+        .card {
+            margin: 10px 0;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            background-color: #fff;
+            cursor: pointer;
+        }
+        .trash-bin {
+            position: absolute;
+            bottom: 10px;
+            right: 10px;
+            width: 30px;
+            height: 30px;
+            background-color: #ffcccc;
+            border: 1px solid #ccc;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+        }
+        .add-button {
+            background-color: #4CAF50;
+            border: none;
+            color: white;
+            padding: 10px 20px;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 16px;
+            margin-bottom: 10px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .add-button:hover {
+            background-color: #45a049;
+        }
+    </style>
 </head>
 <body>
 
-  <button id="showButton">Show Text</button>
-  
-  <div id="hidden-text">
-    This is the text that will be revealed.
-  </div>
+<div class="container">
+    <div class="column" id="todo" ondrop="drop(event, 'todo')" ondragover="allowDrop(event)">
+        <h2>To Do</h2>
+        <button class="add-button" onclick="addCard('todo')">Add New Card</button>
+        <div class="card" draggable="true" id="task1" ondragstart="drag(event)" ondblclick="changeName('task1')">Task 1</div>
+        <div class="card" draggable="true" id="task2" ondragstart="drag(event)" ondblclick="changeName('task2')">Task 2</div>
+        <div class="trash-bin" ondrop="deleteCard(event, 'todo')" ondragover="allowDrop(event)">&#128465;</div>
+    </div>
+    <div class="column" id="doing" ondrop="drop(event, 'doing')" ondragover="allowDrop(event)">
+        <h2>Doing</h2>
+        <div class="trash-bin" ondrop="deleteCard(event, 'doing')" ondragover="allowDrop(event)">&#128465;</div>
+    </div>
+    <div class="column" id="done" ondrop="drop(event, 'done')" ondragover="allowDrop(event)">
+        <h2>Done</h2>
+        <div class="trash-bin" ondrop="deleteCard(event, 'done')" ondragover="allowDrop(event)">&#128465;</div>
+    </div>
+</div>
 
-  <script>
-    document.getElementById('showButton').addEventListener('click', function() {
-      var hiddenText = document.getElementById('hidden-text');
-      
-      // Toggle the display style between none and block
-      if (hiddenText.style.display === 'none') {
-        hiddenText.style.display = 'block';
-      } else {
-        hiddenText.style.display = 'none';
-      }
+<script>
+    function allowDrop(ev) {
+        ev.preventDefault();
+    }
+
+    function drag(ev) {
+        ev.dataTransfer.setData("text", ev.target.id);
+    }
+
+    function drop(ev, columnId) {
+        ev.preventDefault();
+        var data = ev.dataTransfer.getData("text");
+        var draggedElement = document.getElementById(data);
+        var clone = draggedElement.cloneNode(true);
+        clone.id = "cloned-" + data; // Ensure unique ID for cloned element
+        ev.target.appendChild(clone);
+        draggedElement.parentNode.removeChild(draggedElement); // Remove original element
+        attachEventListeners();
+    }
+
+    function deleteCard(ev, columnId) {
+        ev.preventDefault();
+        var data = ev.dataTransfer.getData("text");
+        var draggedElement = document.getElementById(data);
+        draggedElement.parentNode.removeChild(draggedElement);
+    }
+
+    function changeName(id) {
+        var card = document.getElementById(id);
+        var currentName = card.innerText;
+        var newName = prompt("Enter a new name for the card:", currentName);
+        if (newName !== null && newName !== "" && newName !== currentName) {
+            card.innerText = newName;
+        }
+    }
+
+    var lastTapTime = 0;
+    var tapThreshold = 300; // milliseconds
+
+    document.querySelector('.container').addEventListener('click', function(event) {
+        var target = event.target;
+        if (target.classList.contains('card')) {
+            var currentTime = new Date().getTime();
+            if (currentTime - lastTapTime < tapThreshold) {
+                changeName(target.id);
+            }
+            lastTapTime = currentTime;
+        }
     });
-  </script>
-  
+
+    function attachEventListeners() {
+        document.querySelectorAll('.card').forEach(function(card) {
+            card.addEventListener('dragstart', function(event) {
+                drag(event);
+            });
+            card.addEventListener('dblclick', function() {
+                changeName(card.id);
+            });
+        });
+    }
+
+    function addCard(columnId) {
+        var newCardName = prompt("Enter a name for the new card:");
+        if (newCardName) {
+            var newCard = document.createElement("div");
+            newCard.className = "card";
+            newCard.innerText = newCardName;
+            newCard.draggable = true;
+            newCard.id = "task" + (document.querySelectorAll("#" + columnId + " .card").length + 1);
+            document.getElementById(columnId).appendChild(newCard);
+            attachEventListeners(); // Attach event listeners to the newly created card
+        }
+    }
+
+    // Initial attachment of event listeners
+    attachEventListeners();
+</script>
+
 </body>
 </html>
+
