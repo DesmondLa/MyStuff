@@ -62,103 +62,102 @@
     </style>
 </head>
 <body>
-
-<div class="container">
-    <div class="column" id="todo" ondrop="drop(event, 'todo')" ondragover="allowDrop(event)">
-        <h2>To Do</h2>
-        <button class="add-button" onclick="addCard('todo')">Add New Card</button>
-        <div class="card" draggable="true" id="task1" ondragstart="drag(event)" ondblclick="changeName('task1')">Task 1</div>
-        <div class="card" draggable="true" id="task2" ondragstart="drag(event)" ondblclick="changeName('task2')">Task 2</div>
-        <div class="trash-bin" ondrop="deleteCard(event, 'todo')" ondragover="allowDrop(event)">&#128465;</div>
+    <div class="container">
+        <div class="column" id="todo" ondrop="drop(event, 'todo')" ondragover="allowDrop(event)">
+            <h2>To Do</h2>
+            <button class="add-button" onclick="addCard('todo')">Add New Card</button>
+            <div class="card" draggable="true" id="task1" ondragstart="drag(event)" ondblclick="changeName('task1')">Task 1</div>
+            <div class="card" draggable="true" id="task2" ondragstart="drag(event)" ondblclick="changeName('task2')">Task 2</div>
+            <div class="trash-bin" ondrop="deleteCard(event, 'todo')" ondragover="allowDrop(event)">&#128465;</div>
+        </div>
+        <div class="column" id="doing" ondrop="drop(event, 'doing')" ondragover="allowDrop(event)">
+            <h2>Doing</h2>
+            <div class="trash-bin" ondrop="deleteCard(event, 'doing')" ondragover="allowDrop(event)">&#128465;</div>
+        </div>
+        <div class="column" id="done" ondrop="drop(event, 'done')" ondragover="allowDrop(event)">
+            <h2>Done</h2>
+            <div class="trash-bin" ondrop="deleteCard(event, 'done')" ondragover="allowDrop(event)">&#128465;</div>
+        </div>
     </div>
-    <div class="column" id="doing" ondrop="drop(event, 'doing')" ondragover="allowDrop(event)">
-        <h2>Doing</h2>
-        <div class="trash-bin" ondrop="deleteCard(event, 'doing')" ondragover="allowDrop(event)">&#128465;</div>
-    </div>
-    <div class="column" id="done" ondrop="drop(event, 'done')" ondragover="allowDrop(event)">
-        <h2>Done</h2>
-        <div class="trash-bin" ondrop="deleteCard(event, 'done')" ondragover="allowDrop(event)">&#128465;</div>
-    </div>
-</div>
 
-<script>
-    function allowDrop(ev) {
-        ev.preventDefault();
-    }
-
-    function drag(ev) {
-        ev.dataTransfer.setData("text", ev.target.id);
-    }
-
-    function drop(ev, columnId) {
-        ev.preventDefault();
-        var data = ev.dataTransfer.getData("text");
-        var draggedElement = document.getElementById(data);
-        var clone = draggedElement.cloneNode(true);
-        clone.id = "cloned-" + data; // Ensure unique ID for cloned element
-        ev.target.appendChild(clone);
-        draggedElement.parentNode.removeChild(draggedElement); // Remove original element
-        attachEventListeners();
-    }
-
-    function deleteCard(ev, columnId) {
-        ev.preventDefault();
-        var data = ev.dataTransfer.getData("text");
-        var draggedElement = document.getElementById(data);
-        draggedElement.parentNode.removeChild(draggedElement);
-    }
-
-    function changeName(id) {
-        var card = document.getElementById(id);
-        var currentName = card.innerText;
-        var newName = prompt("Enter a new name for the card:", currentName);
-        if (newName !== null && newName !== "" && newName !== currentName) {
-            card.innerText = newName;
+    <script>
+        function allowDrop(ev) {
+            ev.preventDefault();
         }
-    }
 
-    var lastTapTime = 0;
-    var tapThreshold = 300; // milliseconds
+        function drag(ev) {
+            ev.dataTransfer.setData("text", ev.target.id);
+        }
 
-    document.querySelector('.container').addEventListener('click', function(event) {
-        var target = event.target;
-        if (target.classList.contains('card')) {
-            var currentTime = new Date().getTime();
-            if (currentTime - lastTapTime < tapThreshold) {
-                changeName(target.id);
+        function drop(ev, columnId) {
+            ev.preventDefault();
+            var data = ev.dataTransfer.getData("text");
+            var draggedElement = document.getElementById(data);
+            var clone = draggedElement.cloneNode(true);
+            clone.id = "cloned-" + data; // Ensure unique ID for cloned element
+            ev.target.appendChild(clone);
+            draggedElement.parentNode.removeChild(draggedElement); // Remove original element
+            attachEventListeners();
+        }
+
+        function deleteCard(ev, columnId) {
+            ev.preventDefault();
+            var data = ev.dataTransfer.getData("text");
+            var draggedElement = document.getElementById(data);
+            draggedElement.parentNode.removeChild(draggedElement);
+        }
+        function changeName(id) {
+            var card = document.getElementById(id);
+            var currentName = card.innerText;
+            var newName = prompt("Enter a new name for the card:", currentName);
+            if (newName !== null && newName !== "" && newName !== currentName) {
+                card.innerText = newName;
             }
-            lastTapTime = currentTime;
         }
-    });
 
-    function attachEventListeners() {
-        document.querySelectorAll('.card').forEach(function(card) {
-            card.addEventListener('dragstart', function(event) {
-                drag(event);
-            });
-            card.addEventListener('dblclick', function() {
-                changeName(card.id);
-            });
+        var lastTapTime = 0;
+        var tapThreshold = 300; // milliseconds
+
+        document.querySelector('.container').addEventListener('click', function(event) {
+            var target = event.target;
+            if (target.classList.contains('card')) {
+                var currentTime = new Date().getTime();
+                if (currentTime - lastTapTime < tapThreshold) {
+                    changeName(target.id);
+                }
+                lastTapTime = currentTime;
+            }
         });
-    }
 
-    function addCard(columnId) {
-        var newCardName = prompt("Enter a name for the new card:");
-        if (newCardName) {
-            var newCard = document.createElement("div");
-            newCard.className = "card";
-            newCard.innerText = newCardName;
-            newCard.draggable = true;
-            newCard.id = "task" + (document.querySelectorAll("#" + columnId + " .card").length + 1);
-            document.getElementById(columnId).appendChild(newCard);
-            attachEventListeners(); // Attach event listeners to the newly created card
+        function attachEventListeners() {
+            document.querySelectorAll('.card').forEach(function(card) {
+                card.addEventListener('dragstart', function(event) {
+                    drag(event);
+                });
+                card.addEventListener('dblclick', function() {
+                    changeName(card.id);
+                });
+            });
         }
-    }
 
-    // Initial attachment of event listeners
-    attachEventListeners();
-</script>
+        function addCard(columnId) {
+            var newCardName = prompt("Enter a name for the new card:");
+            if (newCardName) {
+                var newCard = document.createElement("div");
+                newCard.className = "card";
+                newCard.innerText = newCardName;
+                newCard.draggable = true;
+                newCard.id = "task" + (document.querySelectorAll("#" + columnId + " .card").length + 1);
+                document.getElementById(columnId).appendChild(newCard);
+                attachEventListeners(); // Attach event listeners to the newly created card
+            }
+        }
+
+        // Initial attachment of event listeners
+        attachEventListeners();
+    </script>
 
 </body>
 </html>
+
 

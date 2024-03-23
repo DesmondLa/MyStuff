@@ -34,6 +34,8 @@
 
             // Check if the entered password is correct
             if (passwordInput === '321ssaP') { // New password: '321ssaP'
+                // Store the flag in localStorage to indicate successful login
+                localStorage.setItem("loggedIn", "true");
                 window.location.href = 'page1.html'; // Redirect to page1.html
             } else {
                 alert('Incorrect password. Please try again.');
@@ -42,3 +44,4 @@
     </script>
 </body>
 </html>
+
