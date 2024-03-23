@@ -33,7 +33,7 @@
             const passwordInput = document.getElementById('password').value;
 
             // Check if the entered password is correct
-            if (passwordInput === 'yourpassword') { // Replace 'yourpassword' with the actual password
+            if (passwordInput === 'Pass123') { // Replace 'yourpassword' with the actual password
                 window.location.href = 'actual_website.html'; // Redirect to the actual website
             } else {
                 alert('Incorrect password. Please try again.');
