@@ -106,6 +106,7 @@
             var draggedElement = document.getElementById(data);
             draggedElement.parentNode.removeChild(draggedElement);
         }
+
         function changeName(id) {
             var card = document.getElementById(id);
             var currentName = card.innerText;
@@ -155,9 +156,14 @@
 
         // Initial attachment of event listeners
         attachEventListeners();
+
+        // Check if the user is logged in, if not, redirect to the index page
+        window.onload = function() {
+            if (localStorage.getItem("loggedIn") !== "true") {
+                window.location.href = "index.html";
+            }
+        };
     </script>
 
 </body>
 </html>
-
-
